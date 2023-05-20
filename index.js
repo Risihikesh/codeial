@@ -2,7 +2,8 @@ const express= require('express');
 const app=express();
 const port=8000;
 
-
+//use express router
+app.use('/',require('./routes/index')) // or we can just use /routes it will automatically fetch index.js in routes
 
 app.listen(port, function(err){
     if(err){
