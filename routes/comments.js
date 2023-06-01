@@ -6,5 +6,5 @@ const passport= require('passport');
  const commentsController= require('../controllers/comments_controller');
 
  router.post('/create',passport.checkAuthentication, commentsController.create); //here we have used passport.checkAuthentication for avoid unauthorised form posting by changing just html file
-
+ router.get('/destroy/:id',passport.checkAuthentication, commentsController.destroy);
  module.exports= router;
