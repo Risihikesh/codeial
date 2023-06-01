@@ -1,15 +1,13 @@
 // const User= require('../models/user')
 
 // module.exports.profile= function(req, res){
-//     // res.end('<h1>User Profile</h1>');
-
-//     //niche wala nhi ho rha 
-//     // return res.render('profile',{
-//     //     title: "User Profile"
-//     // });
+//     User.findById(req.params.id, function(err, user){
 //     return res.render('user_profile', {
 //         title: 'User Profile'
+//         profile_user: user
 //     })
+// })
+
 // }
 
 // //render the sign up page
@@ -62,23 +60,40 @@
 
     const User = require('../models/user');
 
-    module.exports.profile = async function (req, res) {
-        if (req.cookies.user_id) {
-            try {
-                let user = await User.findById(req.cookies.user_id);
-                if (user) {
-                    return res.render('user_profile', {
-                        title: 'User Profile',
-                        user: user
-                    });
-                }
-            } catch (err) {
-                console.log('Error in finding user', err);
-            }
-        } else {
-            return res.redirect('/users/sign-in');
+    // module.exports.profile = async function (req, res) {
+    //     if (req.cookies.user_id) {
+    //         try {
+    //             let user = await User.findById(req.cookies.user_id);
+    //             if (user) {
+    //                 return res.render('user_profile', {
+    //                     title: 'User Profile',
+    //                     user: user
+    //                 });
+    //             }
+    //         } catch (err) {
+    //             console.log('Error in finding user', err);
+    //         }
+    //     } else {
+    //         return res.redirect('/users/sign-in');
+    //     }
+    // };
+
+    module.exports.profile = async function(req, res) {
+        try {
+          const user = await User.findById(req.params.id).exec();
+      
+          return res.render('user_profile', {
+            title: 'User Profile',
+            profile_user: user
+          });
+        } catch (err) {
+          console.error(err);
+          // Handle any errors that occur during the execution
+          // You can customize the error handling based on your requirements
+          return res.status(500).send('Internal Server Error');
         }
-    };
+      };
+      
 
     //render the sign up page
     module.exports.signUp = async function (req, res) {
