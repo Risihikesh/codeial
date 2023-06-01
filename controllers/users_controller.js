@@ -93,6 +93,32 @@
           return res.status(500).send('Internal Server Error');
         }
       };
+
+      /*** update the user name and email */
+
+    //   module.exports.update= function(req, res){
+    //     if(req.user.id == req.params.id){
+    //         User.findByIdAndUpdate(req.params.id, req.body, function(err, user){
+    //         return res.redirect('back');
+    //         });
+    //     }else{
+    //         return res.status(401).send('Unauthorized');
+    //     }
+    // }
+    module.exports.update = async function(req, res) {
+        try {
+          if (req.user.id == req.params.id) {
+            const user = await User.findByIdAndUpdate(req.params.id, req.body).exec();
+            return res.redirect('back');
+          } else {
+            return res.status(401).send('Unauthorized');
+          }
+        } catch (err) {
+          console.error(err);
+          // Handle any errors that occur during the execution
+          return res.status(500).send('Internal Server Error');
+        }
+      };
       
 
     //render the sign up page
