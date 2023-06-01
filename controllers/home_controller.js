@@ -30,7 +30,15 @@ const Post = require('../models/post');
 
 module.exports.home = async function(req, res) {
     try {
-        const posts = await Post.find({}).populate('user').exec();  //we can remove .exec() bcs in Mongoose, the populate() method already return promise, don't need to call .exec() explicitly
+        const posts = await Post.find({})
+        .populate('user')
+        .populate({
+            path: 'comments',
+            populate:{
+                path: 'user'
+            }
+        })
+        .exec();  //we can remove .exec() bcs in Mongoose, the populate() method already return promise, don't need to call .exec() explicitly
         
         return res.render('home', {
             title: "Codeial | Home",
