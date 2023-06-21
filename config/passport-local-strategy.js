@@ -44,18 +44,21 @@ const LocalStrategy=require('passport-local').Strategy;
 /***here i have used the async method because findOne now doesn't support callback function */
 // Authentication using passport
 passport.use(new LocalStrategy({
-    usernameField: 'email'
+    usernameField: 'email',
+    passReqToCallback: true
   },
-  async function(email, password, done) {
+  async function(req, email, password, done) {
     try {
       const user = await User.findOne({ email: email });
       if (!user || user.password !== password) {
-        console.log('Invalid username/password');
+        // console.log('Invalid username/password');
+        req.flash('error', 'Invalid username/password')
         return done(null, false);
       }
       return done(null, user);
     } catch (err) {
-      console.log('Error in finding user --> Passport');
+      // console.log('Error in finding user --> Passport');
+      req.flash('error', err)
       return done(err);
     }
   }

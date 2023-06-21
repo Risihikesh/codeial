@@ -43,7 +43,8 @@ const User = require('../models/user');
 
 
 module.exports.home = async function(req, res) {
-    try {
+    try { 
+        //populate the user of each post
         const posts = await Post.find({})
         .populate('user')
         .populate({
@@ -61,7 +62,7 @@ module.exports.home = async function(req, res) {
             all_users: users
         });
     } catch (err) {
-        console.log(err);
+        console.log('Error',err);
         return res.end('<h1>Error in fetching posts from database</h1>');
     }
 }

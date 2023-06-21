@@ -186,6 +186,7 @@
 
         // sign in and create a session for users
         module.exports.createSession = function (req, res){
+          req.flash('success', 'Logged in Successfully')
             return res.redirect('/');
         }
 
@@ -199,6 +200,8 @@
                     return;
                 }
                 // Redirect to appropriate page after logout
+                req.flash('success', 'Logged Out Successfully')
+
                 return res.redirect('/');
             });
         }

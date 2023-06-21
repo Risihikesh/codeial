@@ -19,6 +19,10 @@ const sassMiddleware= require('node-sass-middleware');
 // app.use(express.urlencoded);
 
 
+const flash= require('connect-flash');
+const customMware= require('./config/middleware')
+
+
 app.use(sassMiddleware({
     src: './assets/scss',
     dest:'./assets/css',
@@ -69,6 +73,11 @@ app.use(passport.initialize());
 app.use(passport.session()); // passport also help in maintaining session
 
 app.use(passport.setAuthenticatedUser)
+
+//we have to use flash message session bcs it uses the session cookies
+app.use(flash());
+app.use(customMware.setFlash);
+
 app.use('/', require('./routes'));
 
 
