@@ -28,26 +28,99 @@
 const Comment = require('../models/comment');
 const Post = require('../models/post');
 
-module.exports.create = async function (req, res) {
-  try {
-    const post = await Post.findById(req.body.post);
+// module.exports.create = async function (req, res) {
+//   try {
+//     const post = await Post.findById(req.body.post);
 
-    if (post) {
-      const comment = await Comment.create({
-        content: req.body.content,
-        post: req.body.post,
-        user: req.user._id,
-      });
+//     if (post) {
+//       const comment = await Comment.create({
+//         content: req.body.content,
+//         post: req.body.post,
+//         user: req.user._id,
+//       });
 
-      post.comments.push(comment);
-      await post.save();
+//       post.comments.push(comment);
+//        post.save();
 
-      res.redirect('/');
-    }
-  } catch (err) {
-    // handle error
+      
+//       if (req.xhr){
+//         // Similar for comments to fetch the user's id!
+//         comment = await comment.populate('user', 'name').execPopulate();
+
+//         return res.status(200).json({
+//             data: {
+//                 comment: comment
+//             },
+//             message: "Post created!"
+//         });
+//     }
+
+
+//     req.flash('success', 'Comment published!');
+
+//       res.redirect('/');
+//     }
+//   } catch (err) {
+//     // handle error
+//     req.flash('error', err);
+//     return;
+//   }
+// };
+
+/****** ta create comment controller*/
+
+module.exports.create = async function(req,res){
+
+  console.log("Inside async");
+  try{
+      console.log("Inside try");
+      let post = await Post.findById(req.body.post);
+      if(post){
+          console.log("Post found");
+          let comment = await Comment.create({
+              content:req.body.content,
+              post:req.body.post,
+              user:req.user._id
+          });
+          console.log("Comment created");
+          post.comments.push(comment);
+           post.save();
+          await comment.populate('user','name email');
+
+          console.log("Before xhr");
+          
+          
+
+          if(req.xhr){
+              console.log("Inside xhr");
+              
+              return res.status(200).json({
+                  data:{
+                      comment:comment
+                  },
+                  message : "Comment created via Ajax!"
+              });
+            
+          }
+          console.log("Not xhr");
+          req.flash('success',"Comment created!")
+          return res.redirect('back');
+      }
+      else{
+          req.flash('error',"So sorry no post is found in the database!")
+          // console.log("So sorry no post is found in the database");
+          return;
+      }
+
+  }catch(err){
+
+      console.log("Inside catch");
+      req.flash('error',err);
+      // console.log("Error",err);
+      return res.redirect("back");
+
   }
-};
+}
 
 //normal function
 // module.exports.destroy = function(req, res){
@@ -75,14 +148,31 @@ module.exports.destroy = async function(req, res){
           await comment.deleteOne();
           
           await Post.findByIdAndUpdate(postId, {$pull: {comments: req.params.id}});
+
+
+           // send the comment id which was deleted back to the views
+           if (req.xhr){
+            return res.status(200).json({
+                data: {
+                    comment_id: req.params.id
+                },
+                message: "Post deleted"
+            });
+        }
+
+
+        req.flash('success', 'Comment deleted!');
+
           
           return res.redirect('back');
       } else {
+        req.flash('error', 'Unauthorized');
           return res.redirect('back');
       }
   } catch (err) {
       // Handle the error
       console.error(err);
+      req.flash('error', err);
       return res.redirect('back');
   }
 }

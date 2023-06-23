@@ -28,23 +28,25 @@
 // module.exports.create=function(req,res){
 //     //
 //     if(req.body.password != req.body.confirm_password){
+//           req.flash('error', 'Passwords do not match');
 //         return res.redirect('back');
 //     }
 //     User.findOne({email: req.body.email}, function(err, user){
 //         if(err){
-//             console.log('error in finding user in signing up', err);
+//             req.flash('error', err);
 //             return;
 //         }
 //         if(!user){
 //             User.create(req.body, function(err, newUser){
 //                 if(err){
-//                     console.log('error in creating user while signing up');
+//                     req.flash('error', err);
 //                     return;
 //                 }
 //                 return res.redirect('/users/sign-in');
 //             })
 //         }
 //         else{
+//             req.flash('success', 'You have signed up, login to continue!');
 //             return res.redirect('back');
 //         }
 //     })
@@ -99,9 +101,11 @@
     //   module.exports.update= function(req, res){
     //     if(req.user.id == req.params.id){
     //         User.findByIdAndUpdate(req.params.id, req.body, function(err, user){
+    //         req.flash('success', 'Updated!');
     //         return res.redirect('back');
     //         });
     //     }else{
+    //         req.flash('error', 'Unauthorized!');
     //         return res.status(401).send('Unauthorized');
     //     }
     // }
@@ -109,8 +113,10 @@
         try {
           if (req.user.id == req.params.id) {
             const user = await User.findByIdAndUpdate(req.params.id, req.body).exec();
+            req.flash('success', 'Updated!');
             return res.redirect('back');
           } else {
+            req.flash('error', 'Unauthorized!');
             return res.status(401).send('Unauthorized');
           }
         } catch (err) {
@@ -143,23 +149,48 @@
     };
 
     //get the sign up data
+
+    
+    // module.exports.create = async function (req, res) {
+    //     //use async function
+    //     if (req.body.password != req.body.confirm_password) {
+    //       req.flash('error', 'Passwords do not match');
+    //          return res.redirect('back');
+    //         }
+    //         try {
+    //             let user = await User.findOne({ email: req.body.email });
+    //             if (!user) {
+    //                 user = await User.create(req.body);
+    //                 return res.redirect('/users/sign-in');
+    //             } else {
+    //                 return res.redirect('back');
+    //             }
+    //         } catch (err) {
+    //             console.log('Error in creating user', err);
+    //         }
+    //     };
+
     module.exports.create = async function (req, res) {
-        //use async function
+      try {
         if (req.body.password != req.body.confirm_password) {
-             return res.redirect('back');
-            }
-            try {
-                let user = await User.findOne({ email: req.body.email });
-                if (!user) {
-                    user = await User.create(req.body);
-                    return res.redirect('/users/sign-in');
-                } else {
-                    return res.redirect('back');
-                }
-            } catch (err) {
-                console.log('Error in creating user', err);
-            }
-        };
+          req.flash('error', 'Passwords do not match');
+          return res.redirect('back');
+        }
+    
+        const user = await User.findOne({ email: req.body.email });
+        if (!user) {
+          const newUser = await User.create(req.body);
+          return res.redirect('/users/sign-in');
+        } else {
+          req.flash('success', 'You have signed up, login to continue!');
+          return res.redirect('back');
+        }
+      } catch (err) {
+        req.flash('error', err);
+        return;
+      }
+    };
+    
         
         // // sign in and create a session for users
         // module.exports.createSession = async function (req, res) {
