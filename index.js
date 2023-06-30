@@ -11,6 +11,11 @@ const db = require('./config/mongoose');
 const session= require('express-session');
 const passport=require('passport')
 const passportLocal= require('./config/passport-local-strategy');
+
+const passportJWT= require('./config/passport-jwt-strategy')
+const passportGoogle= require('./config/passport-google-oauth2-strategy')
+
+
 const MongoStore = require('connect-mongo')
 // here i have used node version 16.0.0 bcs node sass middleware is depreceated from higher version 
 //earlier i have done sass-middleware but scss file was not compiling
@@ -33,6 +38,9 @@ app.use(sassMiddleware({
 
 app.use(cookieParser());
 app.use(express.static('./assets'));
+
+//take upload path available to the browser
+app.use('/uploads', express.static(__dirname + '/uploads'))
 
 app.use(expressLayouts);
 app.use(express.urlencoded({ extended: true }))

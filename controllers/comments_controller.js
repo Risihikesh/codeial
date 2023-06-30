@@ -27,6 +27,9 @@
 
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const commentsMailer = require('../mailers/comments_mailer'); 
+const queue= require('../config/kue')  
+const commentEmailWorker = require('../workers/comment_email-Worker');
 
 // module.exports.create = async function (req, res) {
 //   try {
@@ -86,6 +89,16 @@ module.exports.create = async function(req,res){
           post.comments.push(comment);
            post.save();
           await comment.populate('user','name email');
+
+          //parallel job
+        //   commentsMailer.newComment(comment);
+        let job= queue.create('emails', comment).save(function(err){
+            if(err){
+                console.log('error in sending to the queue', err);
+                return;
+            }
+            console.log('job enqueued',job.id);
+        })
 
           console.log("Before xhr");
           

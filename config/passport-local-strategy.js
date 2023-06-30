@@ -1,6 +1,7 @@
 const passport = require('passport');
-const User = require('../models/user');
+
 const LocalStrategy=require('passport-local').Strategy;
+const User = require('../models/user');
 
 
 /*****here it is old call back method */
@@ -84,6 +85,72 @@ passport.deserializeUser(async function(id, done) {
     return done(err);
   }
 });
+
+
+
+
+/****** this one is given by ta during google auth error
+ * Failed to serialize user into session
+    at pass 
+    *the error in was google oauth-strategy .lean().exec()
+ */
+
+
+// passport.use(new LocalStrategy({
+//   usernameField:'email',
+//   passReqToCallback:true
+// },
+
+// async function(req,email,password,done)
+// {
+// //find a user and establish the identity
+// try{
+// const user=await User.findOne({email:email});
+//   // if(err)
+//   // {
+//   //     console.log("Error in finding user->passport");
+//   //     return done(err);
+//   if(!user ||user.password!=password)
+//   {
+//       req.flash('error','Invalid username/password');
+//       return done(null,false);
+//   }
+//   return done(null,user);
+// }
+// catch(err)
+// {
+  
+// console.log("Error is coming in passport");
+// return;
+// }
+// })
+// );
+
+// //seralize the user to decide which key is to be kept in cookies
+
+// passport.serializeUser(function(user,done){
+//   done(null,user.id);
+// })
+
+// passport.deserializeUser(
+//   async function(id,done){
+//       try{
+//  const user=await User.findById(id)
+//  {
+//       // if(err)
+//       // {
+//       // console.log("Error in finding user->passport");
+//       // return done(err);
+//       // }
+   
+//       return done(null,user);
+//  }
+// }catch(err)
+//  {
+//   console.log("Error in finding user->passport");
+//   return done(err);
+//  }
+//   });
 
 
   //check if the user authenticated 
