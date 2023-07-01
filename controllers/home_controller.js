@@ -52,8 +52,9 @@ module.exports.home = async function(req, res) {
             path: 'comments',
             populate:{
                 path: 'user'
-            }
-        })
+            },
+        }).populate('comments')
+        .populate('likes')
         .exec();  //we can remove .exec() bcs in Mongoose, the populate() method already return promise, don't need to call .exec() explicitly
         
         const users = await User.find({}).exec();
