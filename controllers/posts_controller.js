@@ -112,7 +112,7 @@ module.exports.destroy = async function(req, res){
             await Like.deleteMany({_id: {$in: post.comments}});
 
 
-            await post.deleteOne();z
+            await post.deleteOne();
 
             await Comment.deleteMany({post: req.params.id});
 
